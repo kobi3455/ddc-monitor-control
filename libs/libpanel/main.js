@@ -921,7 +921,10 @@ export class LibPanel {
         this._enablers = [];
         const this_path = '/' + split(rsplit(import.meta.url, '/', 1)[0], '/', 3)[3];
         ;
-        this._settings = get_settings(`${this_path}/org.gnome.shell.extensions.libpanel.gschema.xml`);
+        // The schema lives in the extension's own `schemas` directory, which is
+        // compiled on installation, instead of shipping a compiled copy here.
+        const schemas_path = rsplit(this_path, '/', 2)[0] + '/schemas';
+        this._settings = get_settings(`${schemas_path}/org.gnome.shell.extensions.libpanel.gschema.xml`);
         this._injection_manager = new InjectionManager();
         add_named_connections(this._injection_manager, GObject.Object);
     }

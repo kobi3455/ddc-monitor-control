@@ -130,17 +130,18 @@ class MonitorItem extends QuickSlider {
     _bindSlider(code, slider, percent) {
         this._sliders.set(code, slider);
 
-        slider.connect('notify::value', () => {
-            percent.text = `${Math.round(slider.value * 100)}%`;
-            if (slider._blockDdcWrite || slider._ddcDragging)
-                return;
-            this._queueApply(code);
-        });
-        slider.connect('drag-begin', () => (slider._ddcDragging = true));
-        slider.connect('drag-end', () => {
-            slider._ddcDragging = false;
-            this._apply(code);
-        });
+        slider.connectObject(
+            'notify::value', () => {
+                percent.text = `${Math.round(slider.value * 100)}%`;
+                if (slider._blockDdcWrite || slider._ddcDragging)
+                    return;
+                this._queueApply(code);
+            },
+            'drag-begin', () => (slider._ddcDragging = true),
+            'drag-end', () => {
+                slider._ddcDragging = false;
+                this._apply(code);
+            }, this);
     }
 
     _queueApply(code) {
@@ -277,11 +278,11 @@ export default class DdcControlExtension extends Extension {
     disable() {
         Main.layoutManager.disconnectObject(this);
         this._settings.disconnectObject(this);
-        delete this._settings;
+        this._settings = null;
 
         if (this._reloadId)
             GLib.source_remove(this._reloadId);
-        delete this._reloadId;
+        this._reloadId = null;
 
         // Invalidates any detection still in flight
         this._generation++;
@@ -293,7 +294,7 @@ export default class DdcControlExtension extends Extension {
             GLib.source_remove(this._reloadId);
         this._reloadId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
             RELOAD_DELAY_SECONDS, () => {
-                delete this._reloadId;
+                this._reloadId = null;
                 this._reload();
                 return GLib.SOURCE_REMOVE;
             });
@@ -354,13 +355,13 @@ export default class DdcControlExtension extends Extension {
 
     _removeIndicator() {
         this._indicator?.destroy();
-        delete this._indicator;
+        this._indicator = null;
 
         if (this._panel) {
             // Keeps the position the panel was dragged to
             LibPanel.removePanel(this._panel);
             this._panel.destroy();
-            delete this._panel;
+            this._panel = null;
             LibPanel.disable();
         }
     }
@@ -407,6 +408,6 @@ export default class DdcControlExtension extends Extension {
         this._removeIndicator();
 
         this._displays?.forEach(display => display.destroy());
-        delete this._displays;
+        this._displays = null;
     }
 }
