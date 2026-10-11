@@ -1,4 +1,2 @@
 schemas/gschemas.compiled
-icon.png
-.gitignore
-icon.svg
+*.shell-extension.zip

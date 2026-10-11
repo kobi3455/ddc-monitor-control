@@ -42,7 +42,7 @@ The script:
 1. installs `ddcutil` with your package manager (`dnf`, `apt`, `pacman` or
    `zypper`) if it is missing, asking for your sudo password,
 2. loads the `i2c-dev` kernel module if no I2C devices are present,
-3. copies the extension to `~/.local/share/gnome-shell/extensions/ddc-control@kobi`
+3. copies the extension to `~/.local/share/gnome-shell/extensions/ddc-control@kobi3455.github.io`
    and compiles its settings schema,
 4. enables the extension.
 
@@ -84,17 +84,17 @@ Then install the extension itself:
 
 ```sh
 git clone https://github.com/kobi3455/ddc-monitor-control.git \
-    ~/.local/share/gnome-shell/extensions/ddc-control@kobi
-glib-compile-schemas ~/.local/share/gnome-shell/extensions/ddc-control@kobi/schemas
+    ~/.local/share/gnome-shell/extensions/ddc-control@kobi3455.github.io
+glib-compile-schemas ~/.local/share/gnome-shell/extensions/ddc-control@kobi3455.github.io/schemas
 ```
 
-The folder name must be exactly `ddc-control@kobi`.
+The folder name must be exactly `ddc-control@kobi3455.github.io`.
 
 Log out and back in (on Wayland the shell only discovers new extensions at
 login), then enable it:
 
 ```sh
-gnome-extensions enable ddc-control@kobi
+gnome-extensions enable ddc-control@kobi3455.github.io
 ```
 
 To update, run `git pull` in the extension folder, re-run
@@ -119,7 +119,7 @@ buttons.
 Open the preferences from a terminal:
 
 ```sh
-gnome-extensions prefs ddc-control@kobi
+gnome-extensions prefs ddc-control@kobi3455.github.io
 ```
 
 or from any extension manager, such as the GNOME Extensions app or the

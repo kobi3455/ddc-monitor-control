@@ -2,7 +2,7 @@
 # Installs DDC Monitor Control and its dependencies for the current user.
 set -euo pipefail
 
-UUID="ddc-control@kobi"
+UUID="ddc-control@kobi3455.github.io"
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEST="${XDG_DATA_HOME:-$HOME/.local/share}/gnome-shell/extensions/$UUID"
 

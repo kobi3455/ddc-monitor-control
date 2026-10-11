@@ -1,0 +1,33 @@
+<!-- Run this when edited: `glib-compile-schemas .` -->
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.libpanel" path="/org/gnome/shell/extensions/libpanel/">
+    <key name="single-column" type="b">
+      <default>false</default>
+    </key>
+    <key name="alignment" type="s">
+      <default>"right"</default>
+    </key>
+    <key name="layout" type="aas">
+      <default>[]</default>
+    </key>
+    <key name="padding-enabled" type="b">
+      <default>false</default>
+    </key>
+    <key name="padding" type="i">
+      <default>18</default>
+    </key>
+    <key name="row-spacing-enabled" type="b">
+      <default>false</default>
+    </key>
+    <key name="row-spacing" type="i">
+      <default>12</default>
+    </key>
+    <key name="column-spacing-enabled" type="b">
+      <default>false</default>
+    </key>
+    <key name="column-spacing" type="i">
+      <default>12</default>
+    </key>
+  </schema>
+</schemalist>
