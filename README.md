@@ -14,16 +14,13 @@ Quick Settings menu. It talks to the monitors through
   - color preset selection,
   - a refresh button that re-reads the current values from the monitor.
 - Only the features a monitor reports in its DDC capabilities are shown.
-- A value is sent to the monitor when the slider is released, not while it is
-  being dragged. Scroll wheel and keyboard changes are sent shortly after the
-  last change.
 - Configurable slider position: top of the panel, below the built-in sliders,
   bottom of the panel, or a separate panel.
 - Monitors are re-detected after a display is connected or disconnected.
 
 ## Requirements
 
-- GNOME Shell 50.
+- GNOME Shell 50 or higher.
 - `ddcutil` 2.x installed and on `PATH`.
 - A monitor that supports DDC/CI, with DDC/CI enabled in its on-screen menu.
 - Read/write access to the monitor's I2C device (`/dev/i2c-*`) for your user.
@@ -55,6 +52,10 @@ sudo usermod -aG i2c $USER
 ```
 
 ## Installation
+
+The extension is not yet published on
+[extensions.gnome.org](https://extensions.gnome.org/), so for now it has to be
+installed from this repository:
 
 ```sh
 git clone https://github.com/kobi3455/ddc-monitor-control.git \
@@ -90,9 +91,15 @@ buttons.
 
 ## Preferences
 
+Open the preferences from a terminal:
+
 ```sh
 gnome-extensions prefs ddc-control@kobi
 ```
+
+or from any extension manager, such as the GNOME Extensions app or the
+[Extension List](https://extensions.gnome.org/extension/3088/extension-list/)
+shell extension.
 
 | Setting         | Values                                                                 |
 | --------------- | ---------------------------------------------------------------------- |
@@ -122,7 +129,8 @@ journalctl --user -b -o cat _COMM=gnome-shell | grep -i ddc
 ## Limitations
 
 - Only tested on GNOME Shell 50 on Wayland.
-- Interface text is English only.
+- Translations are not implemented yet; the interface is English only.
+- Not yet available on extensions.gnome.org.
 - Placing the sliders inside the main panel relies on GNOME Shell internals
   that may change between releases.
 
