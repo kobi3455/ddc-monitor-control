@@ -21,9 +21,38 @@ Quick Settings menu. It talks to the monitors through
 ## Requirements
 
 - GNOME Shell 50 or higher.
-- `ddcutil` 2.x installed and on `PATH`.
+- `ddcutil` 2.x (installed by the install script).
 - A monitor that supports DDC/CI, with DDC/CI enabled in its on-screen menu.
 - Read/write access to the monitor's I2C device (`/dev/i2c-*`) for your user.
+
+## Installation
+
+The extension is not yet published on
+[extensions.gnome.org](https://extensions.gnome.org/), so for now it has to be
+installed from this repository.
+
+```sh
+git clone https://github.com/kobi3455/ddc-monitor-control.git
+cd ddc-monitor-control
+./install.sh
+```
+
+The script:
+
+1. installs `ddcutil` with your package manager (`dnf`, `apt`, `pacman` or
+   `zypper`) if it is missing, asking for your sudo password,
+2. loads the `i2c-dev` kernel module if no I2C devices are present,
+3. copies the extension to `~/.local/share/gnome-shell/extensions/ddc-control@kobi`
+   and compiles its settings schema,
+4. enables the extension.
+
+**Log out and back in afterwards.** On Wayland the shell only discovers new
+extensions at login.
+
+To update, run `git pull` in the cloned folder, run `./install.sh` again and
+log out and back in.
+
+## Manual (Advanced) Installation
 
 Install ddcutil:
 
@@ -51,11 +80,7 @@ sudo modprobe i2c-dev
 sudo usermod -aG i2c $USER
 ```
 
-## Installation
-
-The extension is not yet published on
-[extensions.gnome.org](https://extensions.gnome.org/), so for now it has to be
-installed from this repository:
+Then install the extension itself:
 
 ```sh
 git clone https://github.com/kobi3455/ddc-monitor-control.git \
@@ -128,7 +153,8 @@ journalctl --user -b -o cat _COMM=gnome-shell | grep -i ddc
 
 ## Limitations
 
-- Only tested on GNOME Shell 50 on Wayland.
+- Tested on Wayland only: Fedora with GNOME Shell 50 and CachyOS with GNOME
+  Shell 51.
 - Translations are not implemented yet; the interface is English only.
 - Not yet available on extensions.gnome.org.
 - Placing the sliders inside the main panel relies on GNOME Shell internals
