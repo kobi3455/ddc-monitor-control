@@ -1,0 +1,13 @@
+.ddc-slider-number {
+    font-weight: bold;
+    padding: 0 6px 0 2px;
+}
+
+.ddc-slider-percent {
+    width: 2.8em;
+}
+
+.ddc-slider-percent-label {
+    text-align: right;
+    font-feature-settings: "tnum";
+}

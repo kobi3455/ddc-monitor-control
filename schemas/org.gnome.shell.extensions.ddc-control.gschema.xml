@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <enum id="org.gnome.shell.extensions.ddc-control.position">
+    <value value="0" nick="top"/>
+    <value value="1" nick="sliders"/>
+    <value value="2" nick="bottom"/>
+    <value value="3" nick="panel"/>
+  </enum>
+  <schema id="org.gnome.shell.extensions.ddc-control" path="/org/gnome/shell/extensions/ddc-control/">
+    <key name="position" enum="org.gnome.shell.extensions.ddc-control.position">
+      <default>'sliders'</default>
+      <summary>Where the monitor sliders are placed in Quick Settings</summary>
+    </key>
+  </schema>
+</schemalist>

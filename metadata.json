@@ -1,0 +1,9 @@
+{
+    "uuid": "ddc-control@kobi",
+    "name": "DDC Monitor Control",
+    "description": "Control external monitor brightness, contrast, volume, input source and color preset over DDC/CI from Quick Settings. Requires ddcutil.",
+    "shell-version": ["50"],
+    "url": "https://github.com/kobi3455/ddc-monitor-control",
+    "settings-schema": "org.gnome.shell.extensions.ddc-control",
+    "version": 1
+}
