@@ -59,6 +59,24 @@ if ! compgen -G "/dev/i2c-*" >/dev/null; then
     echo i2c-dev | sudo tee /etc/modules-load.d/i2c-dev.conf >/dev/null
 fi
 
+i2c_accessible() {
+    local dev
+    for dev in /dev/i2c-*; do
+        [[ -r "$dev" && -w "$dev" ]] && return 0
+    done
+    return 1
+}
+
+# ddcutil's udev rules grant the logged-in user access to the monitors' I2C
+# devices, but only to devices that appear after the rules were installed.
+# Replay the events so they also apply to the ones that already exist.
+if ! i2c_accessible; then
+    info "Applying udev rules to the existing I2C devices"
+    sudo udevadm control --reload
+    sudo udevadm trigger --subsystem-match=i2c-dev --action=add
+    sudo udevadm settle
+fi
+
 # --- Extension --------------------------------------------------------------
 
 # When the destination is this checkout itself (e.g. a symlink used for
@@ -92,9 +110,16 @@ fi
 if ! ddcutil detect --brief 2>/dev/null | grep -q '^Display'; then
     warn "ddcutil did not find a monitor it can control."
     echo "  - Make sure DDC/CI is enabled in the monitor's on-screen menu." >&2
-    echo "  - If 'ddcutil detect' reports permission errors, run:" >&2
-    echo "        sudo usermod -aG i2c \$USER" >&2
-    echo "    and log in again." >&2
+    if ! i2c_accessible; then
+        echo "  - Your user cannot access /dev/i2c-*." >&2
+        if getent group i2c >/dev/null; then
+            echo "    Run:" >&2
+            echo "        sudo usermod -aG i2c \$USER" >&2
+            echo "    and log in again." >&2
+        else
+            echo "    See https://www.ddcutil.com/i2c_permissions" >&2
+        fi
+    fi
 fi
 
 echo

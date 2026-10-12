@@ -41,7 +41,8 @@ The script:
 
 1. installs `ddcutil` with your package manager (`dnf`, `apt`, `pacman` or
    `zypper`) if it is missing, asking for your sudo password,
-2. loads the `i2c-dev` kernel module if no I2C devices are present,
+2. loads the `i2c-dev` kernel module if no I2C devices are present, and
+   re-applies the udev rules if your user cannot access them yet,
 3. copies the extension to `~/.local/share/gnome-shell/extensions/ddc-control@kobi3455.github.io`
    and compiles its settings schema,
 4. enables the extension.
@@ -72,11 +73,19 @@ ddcutil getvcp 10
 If `ddcutil detect` lists your monitors and `getvcp 10` prints a brightness
 value, the extension will work. If it reports permission errors, make sure the
 `i2c-dev` kernel module is loaded and that your user may access `/dev/i2c-*`.
-Recent ddcutil packages ship udev rules that grant this to the logged-in user;
-otherwise add yourself to the `i2c` group and log in again:
+Recent ddcutil packages ship udev rules that grant this to the logged-in user,
+but they only take effect for devices that appear after ddcutil was installed.
+Load the module and re-apply the rules:
 
 ```sh
 sudo modprobe i2c-dev
+sudo udevadm trigger --subsystem-match=i2c-dev --action=add
+```
+
+If that is not enough and your distribution has an `i2c` group, add yourself
+to it and log in again:
+
+```sh
 sudo usermod -aG i2c $USER
 ```
 
