@@ -1,0 +1,95 @@
+# French translation for DDC Monitor Control.
+# This file is distributed under the same license as the DDC Monitor Control package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DDC Monitor Control\n"
+"Report-Msgid-Bugs-To: https://github.com/kobi3455/ddc-monitor-control/"
+"issues\n"
+"POT-Creation-Date: 2026-10-19 14:09+0200\n"
+"PO-Revision-Date: 2026-10-19 12:00+0200\n"
+"Last-Translator: Machine translation, not yet reviewed\n"
+"Language-Team: none\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: extension.js:25
+msgid "Contrast"
+msgstr "Contraste"
+
+#: extension.js:26
+msgid "Volume"
+msgstr "Volume"
+
+#: extension.js:30
+msgid "Input Source"
+msgstr "Source d’entrée"
+
+#: extension.js:31
+msgid "Color Preset"
+msgstr "Préréglage des couleurs"
+
+#. Translators: %s is the monitor's name
+#: extension.js:56 extension.js:79
+#, javascript-format
+msgid "%s brightness"
+msgstr "Luminosité de %s"
+
+#. Translators: %s is the monitor's name
+#: extension.js:58
+#, javascript-format
+msgid "Open %s menu"
+msgstr "Ouvrir le menu de %s"
+
+#. Translators: %d is the number the system gives the monitor
+#: extension.js:84 ddc.js:72
+#, javascript-format
+msgid "Display %d"
+msgstr "Écran %d"
+
+#: extension.js:91
+msgid "Re-read settings from monitor"
+msgstr "Relire les paramètres du moniteur"
+
+#: extension.js:115
+msgid "Re-detect Monitors"
+msgstr "Détecter à nouveau les moniteurs"
+
+#: prefs.js:8
+msgid "Top of the panel"
+msgstr "En haut du panneau"
+
+#: prefs.js:9
+msgid "Below the built-in sliders"
+msgstr "Sous les curseurs intégrés"
+
+#: prefs.js:10
+msgid "Bottom of the panel"
+msgstr "En bas du panneau"
+
+#: prefs.js:11
+msgid "Separate panel"
+msgstr "Panneau séparé"
+
+#: prefs.js:24
+msgid "Slider position"
+msgstr "Position des curseurs"
+
+#: prefs.js:25
+msgid "Where the monitor sliders appear in Quick Settings"
+msgstr "Emplacement des curseurs des moniteurs dans les Paramètres rapides"
+
+#: prefs.js:33
+msgid "Re-detect"
+msgstr "Détecter à nouveau"
+
+#: prefs.js:39
+msgid "Re-detect monitors"
+msgstr "Détecter à nouveau les moniteurs"
+
+#: prefs.js:40
+msgid "Search again for monitors that support DDC/CI"
+msgstr "Rechercher à nouveau les moniteurs compatibles DDC/CI"

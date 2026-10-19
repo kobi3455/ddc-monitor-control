@@ -1,0 +1,96 @@
+# Ukrainian translation for DDC Monitor Control.
+# This file is distributed under the same license as the DDC Monitor Control package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DDC Monitor Control\n"
+"Report-Msgid-Bugs-To: https://github.com/kobi3455/ddc-monitor-control/"
+"issues\n"
+"POT-Creation-Date: 2026-10-19 14:09+0200\n"
+"PO-Revision-Date: 2026-10-19 12:00+0200\n"
+"Last-Translator: Machine translation, not yet reviewed\n"
+"Language-Team: none\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: extension.js:25
+msgid "Contrast"
+msgstr "Контрастність"
+
+#: extension.js:26
+msgid "Volume"
+msgstr "Гучність"
+
+#: extension.js:30
+msgid "Input Source"
+msgstr "Джерело сигналу"
+
+#: extension.js:31
+msgid "Color Preset"
+msgstr "Колірний профіль"
+
+#. Translators: %s is the monitor's name
+#: extension.js:56 extension.js:79
+#, javascript-format
+msgid "%s brightness"
+msgstr "Яскравість: %s"
+
+#. Translators: %s is the monitor's name
+#: extension.js:58
+#, javascript-format
+msgid "Open %s menu"
+msgstr "Відкрити меню: %s"
+
+#. Translators: %d is the number the system gives the monitor
+#: extension.js:84 ddc.js:72
+#, javascript-format
+msgid "Display %d"
+msgstr "Дисплей %d"
+
+#: extension.js:91
+msgid "Re-read settings from monitor"
+msgstr "Перечитати налаштування з монітора"
+
+#: extension.js:115
+msgid "Re-detect Monitors"
+msgstr "Повторно виявити монітори"
+
+#: prefs.js:8
+msgid "Top of the panel"
+msgstr "Угорі панелі"
+
+#: prefs.js:9
+msgid "Below the built-in sliders"
+msgstr "Під вбудованими повзунками"
+
+#: prefs.js:10
+msgid "Bottom of the panel"
+msgstr "Унизу панелі"
+
+#: prefs.js:11
+msgid "Separate panel"
+msgstr "Окрема панель"
+
+#: prefs.js:24
+msgid "Slider position"
+msgstr "Розташування повзунків"
+
+#: prefs.js:25
+msgid "Where the monitor sliders appear in Quick Settings"
+msgstr "Де повзунки моніторів з’являються у швидких налаштуваннях"
+
+#: prefs.js:33
+msgid "Re-detect"
+msgstr "Виявити повторно"
+
+#: prefs.js:39
+msgid "Re-detect monitors"
+msgstr "Повторно виявити монітори"
+
+#: prefs.js:40
+msgid "Search again for monitors that support DDC/CI"
+msgstr "Повторно шукати монітори з підтримкою DDC/CI"

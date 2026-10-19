@@ -3,7 +3,7 @@ import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import St from 'gi://St';
 
-import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {QuickSlider, SystemIndicator} from 'resource:///org/gnome/shell/ui/quickSettings.js';
@@ -19,15 +19,22 @@ const RELOAD_DELAY_SECONDS = 3;
 // sent once the value has been left alone for this long.
 const APPLY_DELAY_MS = 400;
 
+// Labels are translated where they are used: gettext() only works once
+// the extension object exists, after this module has been loaded.
 const MENU_SLIDERS = [
-    [Ddc.Vcp.CONTRAST, 'Contrast'],
-    [Ddc.Vcp.VOLUME, 'Volume'],
+    [Ddc.Vcp.CONTRAST, N_('Contrast')],
+    [Ddc.Vcp.VOLUME, N_('Volume')],
 ];
 
 const MENU_CHOICES = [
-    [Ddc.Vcp.INPUT_SOURCE, 'Input Source'],
-    [Ddc.Vcp.COLOR_PRESET, 'Color Preset'],
+    [Ddc.Vcp.INPUT_SOURCE, N_('Input Source')],
+    [Ddc.Vcp.COLOR_PRESET, N_('Color Preset')],
 ];
+
+// Only marks the strings above for extraction by xgettext
+function N_(str) {
+    return str;
+}
 
 // The number the compositor gives the monitor, falling back to
 // ddcutil's own numbering when the connector cannot be matched.
@@ -45,8 +52,10 @@ class MonitorItem extends QuickSlider {
     _init(display, redetect) {
         super._init({
             iconName: 'display-brightness-symbolic',
-            iconLabel: `${display.name} brightness`,
-            menuButtonAccessibleName: `Open ${display.name} menu`,
+            // Translators: %s is the monitor's name
+            iconLabel: _('%s brightness').format(display.name),
+            // Translators: %s is the monitor's name
+            menuButtonAccessibleName: _('Open %s menu').format(display.name),
         });
 
         this._display = display;
@@ -67,17 +76,19 @@ class MonitorItem extends QuickSlider {
         const [percentBin, percent] = this._createPercentLabel();
         box.insert_child_above(percentBin, sliderBin);
 
-        this.slider.accessible_name = `${display.name} brightness`;
+        this.slider.accessible_name = _('%s brightness').format(display.name);
         this._bindSlider(Ddc.Vcp.BRIGHTNESS, this.slider, percent);
 
-        this.menu.setHeader('video-display-symbolic', display.name, `Display ${number}`);
+        this.menu.setHeader('video-display-symbolic', display.name,
+            // Translators: %d is the number the system gives the monitor
+            _('Display %d').format(number));
 
         // Values are not polled, so this picks up changes made with the
         // monitor's own buttons.
         const refreshButton = new St.Button({
             child: new St.Icon({icon_name: 'view-refresh-symbolic'}),
             style_class: 'icon-button flat',
-            accessible_name: 'Re-read settings from monitor',
+            accessible_name: _('Re-read settings from monitor'),
             can_focus: true,
             x_align: Clutter.ActorAlign.END,
             y_align: Clutter.ActorAlign.CENTER,
@@ -101,7 +112,7 @@ class MonitorItem extends QuickSlider {
         }
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this.menu.addAction('Re-detect Monitors', () => redetect());
+        this.menu.addAction(_('Re-detect Monitors'), () => redetect());
 
         this.menuEnabled = true;
 
@@ -169,6 +180,7 @@ class MonitorItem extends QuickSlider {
     }
 
     _addMenuSlider(code, label) {
+        label = _(label);
         this.menu.addMenuItem(new PopupMenu.PopupMenuItem(label, {reactive: false}));
 
         const slider = new Slider(0);
@@ -194,7 +206,7 @@ class MonitorItem extends QuickSlider {
     }
 
     _addMenuChoice(code, label) {
-        const subMenu = new PopupMenu.PopupSubMenuMenuItem(label);
+        const subMenu = new PopupMenu.PopupSubMenuMenuItem(_(label));
         const items = new Map();
         for (const [value, name] of this._display.features.get(code).values) {
             const item = subMenu.menu.addAction(name, () => {

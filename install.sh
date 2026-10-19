@@ -43,6 +43,8 @@ if ! command -v glib-compile-schemas >/dev/null; then
         missing+=(glib2)
     fi
 fi
+# msgfmt, to build the translations
+command -v msgfmt >/dev/null || missing+=(gettext)
 
 if (( ${#missing[@]} )); then
     info "Installing dependencies: ${missing[*]}"
@@ -91,6 +93,15 @@ else
 fi
 
 glib-compile-schemas "$DEST/schemas"
+
+# The shell looks for translations in locale/<lang>/LC_MESSAGES/
+domain="$(sed -n 's/.*"gettext-domain": *"\([^"]*\)".*/\1/p' "$SRC/metadata.json")"
+for po in "$SRC"/po/*.po; do
+    [[ -e "$po" ]] || continue
+    lang="$(basename "$po" .po)"
+    mkdir -p "$DEST/locale/$lang/LC_MESSAGES"
+    msgfmt --output-file="$DEST/locale/$lang/LC_MESSAGES/$domain.mo" "$po"
+done
 
 # The running shell does not know a new extension until the next login, so
 # `gnome-extensions enable` would fail here; add it to the enabled list instead.

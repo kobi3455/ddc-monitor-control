@@ -1,6 +1,8 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
+import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
+
 Gio._promisify(Gio.Subprocess.prototype, 'communicate_utf8_async');
 
 export const Vcp = {
@@ -65,7 +67,9 @@ export function parseDetect(stdout) {
             number: Number(number[1]),
             // "card1-DP-2" -> "DP-2", the name the compositor uses
             connector: block.match(/DRM[ _]connector:\s+(?:card\d+-)?(\S+)/)?.[1] ?? null,
-            name: `${mfg} ${model}`.trim() || `Display ${number[1]}`,
+            name: `${mfg} ${model}`.trim() ||
+                // Translators: %d is the number the system gives the monitor
+                _('Display %d').format(Number(number[1])),
         });
     }
     return displays;

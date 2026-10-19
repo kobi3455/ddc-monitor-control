@@ -18,6 +18,8 @@ Quick Settings menu. It talks to the monitors through
   bottom of the panel, or a separate panel.
 - Monitors are re-detected after a display is connected or disconnected, or on
   demand from a monitor's menu or the preferences.
+- Translated into Czech, French, German, Italian, Polish, Russian, Slovak,
+  Spanish and Ukrainian.
 
 ## Requirements
 
@@ -40,12 +42,12 @@ cd ddc-monitor-control
 
 The script:
 
-1. installs `ddcutil` with your package manager (`dnf`, `apt`, `pacman` or
+1. installs `ddcutil` (and `msgfmt` from gettext) with your package manager (`dnf`, `apt`, `pacman` or
    `zypper`) if it is missing, asking for your sudo password,
 2. loads the `i2c-dev` kernel module if no I2C devices are present, and
    re-applies the udev rules if your user cannot access them yet,
 3. copies the extension to `~/.local/share/gnome-shell/extensions/ddc-control@kobi3455.github.io`
-   and compiles its settings schema,
+   and compiles its settings schema and translations,
 4. enables the extension.
 
 **Log out and back in afterwards.** On Wayland the shell only discovers new
@@ -95,10 +97,17 @@ Then install the extension itself:
 ```sh
 git clone https://github.com/kobi3455/ddc-monitor-control.git \
     ~/.local/share/gnome-shell/extensions/ddc-control@kobi3455.github.io
-glib-compile-schemas ~/.local/share/gnome-shell/extensions/ddc-control@kobi3455.github.io/schemas
+cd ~/.local/share/gnome-shell/extensions/ddc-control@kobi3455.github.io
+glib-compile-schemas schemas
+for po in po/*.po; do
+    lang=$(basename "$po" .po)
+    mkdir -p "locale/$lang/LC_MESSAGES"
+    msgfmt -o "locale/$lang/LC_MESSAGES/ddc-control@kobi3455.github.io.mo" "$po"
+done
 ```
 
-The folder name must be exactly `ddc-control@kobi3455.github.io`.
+The folder name must be exactly `ddc-control@kobi3455.github.io`. The `msgfmt`
+step is only needed for translations; without it the interface is in English.
 
 Log out and back in (on Wayland the shell only discovers new extensions at
 login), then enable it:
@@ -170,10 +179,29 @@ journalctl --user -b -o cat _COMM=gnome-shell | grep -i ddc
 ## Limitations
 
 - Tested on Wayland only: Fedora with GNOME Shell 49 and 50 and CachyOS with GNOME Shell 51.
-- Translations are not implemented yet; the interface is English only.
+- The current translations were machine-translated and have not been reviewed
+  by native speakers yet. Corrections are welcome.
+- Input source and color preset names (e.g. "HDMI-1", "sRGB") come from
+  ddcutil and are not translated.
 - Not yet available on extensions.gnome.org.
 - Placing the sliders inside the main panel relies on GNOME Shell internals
   that may change between releases.
+
+## Translations
+
+The extension follows the system language. Translations live in `po/`, one
+`<language>.po` file per language.
+
+To fix a translation, edit its `.po` file and run `./install.sh` again.
+
+To add a language, copy the template and translate the `msgstr` lines:
+
+```sh
+cp po/ddc-control@kobi3455.github.io.pot po/<language>.po
+```
+
+After changing any user-visible text in the code, run `./update-po.sh`. It
+regenerates the template and merges the new strings into every `.po` file.
 
 ## Credits and license
 

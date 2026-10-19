@@ -1,0 +1,96 @@
+# Polish translation for DDC Monitor Control.
+# This file is distributed under the same license as the DDC Monitor Control package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DDC Monitor Control\n"
+"Report-Msgid-Bugs-To: https://github.com/kobi3455/ddc-monitor-control/"
+"issues\n"
+"POT-Creation-Date: 2026-10-19 14:09+0200\n"
+"PO-Revision-Date: 2026-10-19 12:00+0200\n"
+"Last-Translator: Machine translation, not yet reviewed\n"
+"Language-Team: none\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+
+#: extension.js:25
+msgid "Contrast"
+msgstr "Kontrast"
+
+#: extension.js:26
+msgid "Volume"
+msgstr "Głośność"
+
+#: extension.js:30
+msgid "Input Source"
+msgstr "Źródło sygnału"
+
+#: extension.js:31
+msgid "Color Preset"
+msgstr "Profil kolorów"
+
+#. Translators: %s is the monitor's name
+#: extension.js:56 extension.js:79
+#, javascript-format
+msgid "%s brightness"
+msgstr "Jasność monitora %s"
+
+#. Translators: %s is the monitor's name
+#: extension.js:58
+#, javascript-format
+msgid "Open %s menu"
+msgstr "Otwórz menu monitora %s"
+
+#. Translators: %d is the number the system gives the monitor
+#: extension.js:84 ddc.js:72
+#, javascript-format
+msgid "Display %d"
+msgstr "Ekran %d"
+
+#: extension.js:91
+msgid "Re-read settings from monitor"
+msgstr "Ponownie odczytaj ustawienia z monitora"
+
+#: extension.js:115
+msgid "Re-detect Monitors"
+msgstr "Ponownie wykryj monitory"
+
+#: prefs.js:8
+msgid "Top of the panel"
+msgstr "Na górze panelu"
+
+#: prefs.js:9
+msgid "Below the built-in sliders"
+msgstr "Pod wbudowanymi suwakami"
+
+#: prefs.js:10
+msgid "Bottom of the panel"
+msgstr "Na dole panelu"
+
+#: prefs.js:11
+msgid "Separate panel"
+msgstr "Osobny panel"
+
+#: prefs.js:24
+msgid "Slider position"
+msgstr "Położenie suwaków"
+
+#: prefs.js:25
+msgid "Where the monitor sliders appear in Quick Settings"
+msgstr "Gdzie suwaki monitorów są wyświetlane w Szybkich ustawieniach"
+
+#: prefs.js:33
+msgid "Re-detect"
+msgstr "Wykryj ponownie"
+
+#: prefs.js:39
+msgid "Re-detect monitors"
+msgstr "Ponownie wykryj monitory"
+
+#: prefs.js:40
+msgid "Search again for monitors that support DDC/CI"
+msgstr "Ponownie wyszukaj monitory obsługujące DDC/CI"
