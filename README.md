@@ -21,7 +21,7 @@ Quick Settings menu. It talks to the monitors through
 
 ## Requirements
 
-- GNOME Shell 50 or higher.
+- GNOME Shell 49 or higher.
 - `ddcutil` 2.x (installed by the install script).
 - A monitor that supports DDC/CI, with DDC/CI enabled in its on-screen menu.
 - Read/write access to the monitor's I2C device (`/dev/i2c-*`) for your user.
@@ -169,8 +169,7 @@ journalctl --user -b -o cat _COMM=gnome-shell | grep -i ddc
 
 ## Limitations
 
-- Tested on Wayland only: Fedora with GNOME Shell 50 and CachyOS with GNOME
-  Shell 51.
+- Tested on Wayland only: Fedora with GNOME Shell 49 and 50 and CachyOS with GNOME Shell 51.
 - Translations are not implemented yet; the interface is English only.
 - Not yet available on extensions.gnome.org.
 - Placing the sliders inside the main panel relies on GNOME Shell internals
