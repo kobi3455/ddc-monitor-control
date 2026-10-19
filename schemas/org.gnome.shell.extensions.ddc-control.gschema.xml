@@ -11,5 +11,9 @@
       <default>'sliders'</default>
       <summary>Where the monitor sliders are placed in Quick Settings</summary>
     </key>
+    <key name="redetect" type="u">
+      <default>0</default>
+      <summary>Changed by the preferences window to make the extension re-detect monitors</summary>
+    </key>
   </schema>
 </schemalist>

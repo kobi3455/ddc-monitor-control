@@ -18,7 +18,24 @@ export function isCancelled(error) {
         error.matches(Gio.io_error_quark(), Gio.IOErrorEnum.CANCELLED);
 }
 
-async function ddcutil(args, cancellable = null, check = true) {
+// Concurrent ddcutil processes interfere with each other, even on
+// different buses: one of them often fails with "No monitor detected".
+// So every invocation, for any display, goes through one serial queue.
+let queue = Promise.resolve();
+
+function enqueue(task) {
+    const result = queue.then(task);
+    queue = result.catch(() => {});
+    return result;
+}
+
+function ddcutil(args, cancellable = null, check = true) {
+    return enqueue(() => run(args, cancellable, check));
+}
+
+async function run(args, cancellable, check) {
+    // The task may have waited in the queue after its display went away
+    cancellable?.set_error_if_cancelled();
     const proc = Gio.Subprocess.new(['ddcutil', ...args],
         Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
     const [stdout, stderr] = await proc.communicate_utf8_async(null, cancellable);
@@ -123,16 +140,7 @@ export class Display {
         this.features = new Map();
 
         this._cancellable = new Gio.Cancellable();
-        this._queue = Promise.resolve();
         this._pending = new Map();
-    }
-
-    // DDC is slow and a monitor only handles one request at a time, so
-    // everything sent to a display goes through a serial queue.
-    _enqueue(task) {
-        const result = this._queue.then(task);
-        this._queue = result.catch(() => {});
-        return result;
     }
 
     _run(args, check = true) {
@@ -140,8 +148,7 @@ export class Display {
     }
 
     async loadCapabilities() {
-        this.features = parseCapabilities(
-            await this._enqueue(() => this._run(['capabilities'])));
+        this.features = parseCapabilities(await this._run(['capabilities']));
     }
 
     supports(code) {
@@ -155,8 +162,8 @@ export class Display {
     async read(codes) {
         // A single unreadable feature makes ddcutil exit non-zero while
         // still printing the others, so the exit status is not checked.
-        return parseVcp(await this._enqueue(
-            () => this._run(['--brief', 'getvcp', ...codes.map(hex)], false)));
+        return parseVcp(await this._run(
+            ['--brief', 'getvcp', ...codes.map(hex)], false));
     }
 
     /**
@@ -172,10 +179,11 @@ export class Display {
         if (scheduled)
             return;
 
-        this._enqueue(() => {
+        enqueue(() => {
             const latest = this._pending.get(code);
             this._pending.delete(code);
-            return this._run(['--noverify', 'setvcp', hex(code), `${latest}`]);
+            return run(['--bus', `${this.bus}`, '--noverify', 'setvcp', hex(code), `${latest}`],
+                this._cancellable, true);
         }).catch(e => {
             if (!isCancelled(e))
                 console.error(`DDC: ${this.name}: ${e.message}`);

@@ -23,8 +23,22 @@ export default class DdcControlPreferences extends ExtensionPreferences {
         row.connect('notify::selected',
             () => settings.set_string('position', POSITIONS[row.selected][0]));
 
+        const redetectButton = new Gtk.Button({
+            label: 'Re-detect',
+            valign: Gtk.Align.CENTER,
+        });
+        redetectButton.connect('clicked', () =>
+            settings.set_uint('redetect', (settings.get_uint('redetect') + 1) >>> 0));
+        const redetectRow = new Adw.ActionRow({
+            title: 'Re-detect monitors',
+            subtitle: 'Search again for monitors that support DDC/CI',
+            activatable_widget: redetectButton,
+        });
+        redetectRow.add_suffix(redetectButton);
+
         const group = new Adw.PreferencesGroup();
         group.add(row);
+        group.add(redetectRow);
 
         const page = new Adw.PreferencesPage();
         page.add(group);

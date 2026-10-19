@@ -16,7 +16,8 @@ Quick Settings menu. It talks to the monitors through
 - Only the features a monitor reports in its DDC capabilities are shown.
 - Configurable slider position: top of the panel, below the built-in sliders,
   bottom of the panel, or a separate panel.
-- Monitors are re-detected after a display is connected or disconnected.
+- Monitors are re-detected after a display is connected or disconnected, or on
+  demand from a monitor's menu or the preferences.
 
 ## Requirements
 
@@ -139,6 +140,10 @@ shell extension.
 | --------------- | ---------------------------------------------------------------------- |
 | Slider position | Top of the panel, Below the built-in sliders (default), Bottom, Separate panel |
 
+The **Re-detect monitors** button searches for monitors again, the same as
+**Re-detect Monitors** at the bottom of each monitor's menu. Use it when a
+monitor was missed, for example because DDC/CI was enabled after login.
+
 In "Separate panel" mode the sliders get their own panel, which can be dragged
 to a different place in the Quick Settings layout.
 
@@ -150,7 +155,9 @@ Show the extension's log messages:
 journalctl --user -b -o cat _COMM=gnome-shell | grep -i ddc
 ```
 
-- **No sliders appear:** run `ddcutil detect` in a terminal. A monitor listed
+- **No sliders appear:** if you enabled DDC/CI or fixed permissions after
+  logging in, press **Re-detect** in the preferences. Otherwise run
+  `ddcutil detect` in a terminal. A monitor listed
   as "Invalid display" does not answer DDC requests; enable DDC/CI in its
   on-screen menu or try another cable or port. Monitors that do not report
   brightness support are not shown.

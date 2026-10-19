@@ -42,7 +42,7 @@ function displayNumber(display) {
 
 const MonitorItem = GObject.registerClass(
 class MonitorItem extends QuickSlider {
-    _init(display) {
+    _init(display, redetect) {
         super._init({
             iconName: 'display-brightness-symbolic',
             iconLabel: `${display.name} brightness`,
@@ -99,6 +99,9 @@ class MonitorItem extends QuickSlider {
             if (display.features.get(code)?.values.size > 1)
                 this._addMenuChoice(code, label);
         }
+
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this.menu.addAction('Re-detect Monitors', () => redetect());
 
         this.menuEnabled = true;
 
@@ -243,12 +246,12 @@ class MonitorItem extends QuickSlider {
 
 const Indicator = GObject.registerClass(
 class Indicator extends SystemIndicator {
-    _init(displays) {
+    _init(displays, redetect) {
         super._init();
 
         for (const display of displays) {
             if (display.supports(Ddc.Vcp.BRIGHTNESS))
-                this.quickSettingsItems.push(new MonitorItem(display));
+                this.quickSettingsItems.push(new MonitorItem(display, redetect));
         }
 
         // Values are only read here, not whenever the menu opens: DDC
@@ -265,8 +268,11 @@ class Indicator extends SystemIndicator {
 export default class DdcControlExtension extends Extension {
     enable() {
         this._settings = this.getSettings();
-        this._settings.connectObject('changed::position',
-            () => this._rebuild(), this);
+        this._settings.connectObject(
+            'changed::position', () => this._rebuild(),
+            // Bumped by the preferences window to request a re-detection
+            'changed::redetect', () => this._redetect(),
+            this);
 
         this._generation = 0;
         this._reload();
@@ -280,24 +286,34 @@ export default class DdcControlExtension extends Extension {
         this._settings.disconnectObject(this);
         this._settings = null;
 
-        if (this._reloadId)
-            GLib.source_remove(this._reloadId);
-        this._reloadId = null;
+        this._cancelQueuedReload();
 
         // Invalidates any detection still in flight
         this._generation++;
         this._clear();
     }
 
-    _queueReload() {
+    _cancelQueuedReload() {
         if (this._reloadId)
             GLib.source_remove(this._reloadId);
+        this._reloadId = null;
+    }
+
+    _queueReload() {
+        this._cancelQueuedReload();
         this._reloadId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
             RELOAD_DELAY_SECONDS, () => {
                 this._reloadId = null;
                 this._reload();
                 return GLib.SOURCE_REMOVE;
             });
+    }
+
+    // Manual re-detection, for monitors that were missed at startup (e.g.
+    // DDC/CI only enabled later) or changed without a hotplug event.
+    _redetect() {
+        this._cancelQueuedReload();
+        this._reload();
     }
 
     async _reload() {
@@ -326,7 +342,7 @@ export default class DdcControlExtension extends Extension {
             return;
 
         this._removeIndicator();
-        this._indicator = new Indicator(this._displays);
+        this._indicator = new Indicator(this._displays, () => this._redetect());
 
         if (this._settings.get_string('position') === 'panel') {
             this._addPanel();
