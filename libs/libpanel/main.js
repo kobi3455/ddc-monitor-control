@@ -19,6 +19,8 @@ const QuickSettingsLayout = QuickSettings.menu._grid.layout_manager.constructor;
 const VERSION = 1;
 // The spacing between elements of the grid, in pixels.
 const GRID_SPACING = 5;
+// Name of the constraint that gives an empty column the width of its neighbour
+const WIDTH_CONSTRAINT = 'libpanel-width';
 function registerClass(metadata, klass) {
     if (klass === undefined) {
         klass = metadata;
@@ -463,8 +465,11 @@ class PanelGrid extends PopupMenu {
             for (const column of this.box.get_children().toReversed()) {
                 this.box.remove_child(column);
                 // remove placeholder columns, they'll be recreated automatically
-                if (!column.get_constraints().includes(column._width_constraint)) {
+                if (!column._width_constraint.enabled) {
                     this.box.add_child(column);
+                }
+                else {
+                    column.destroy();
                 }
             }
         }
@@ -578,14 +583,15 @@ const PanelColumn = registerClass(class PanelColumn extends Semitransparent(St.B
         this.add_child(this._inner);
         this._set_valign(valign);
         this._inhibit_constraint_update = false;
-        this._width_constraint = new Clutter.BindConstraint({
+        // Owned by the column alone and switched on only while it is empty,
+        // so it goes away with the column
+        this.add_constraint_with_name(WIDTH_CONSTRAINT, new Clutter.BindConstraint({
             coordinate: Clutter.BindCoordinate.WIDTH,
             source: null,
-        });
-        this.add_constraint(this._width_constraint);
+        }));
         this.connect_after_named(this._inner, 'child-added', (_self, child) => {
             if (this._inner.get_children().length === 1)
-                this.remove_constraint(this._width_constraint);
+                this._width_constraint.enabled = false;
             if (!child.is_grid_item)
                 return;
             const prev_index = this._panel_layout.indexOf(child.get_previous_sibling()?.panel_name);
@@ -607,19 +613,12 @@ const PanelColumn = registerClass(class PanelColumn extends Semitransparent(St.B
         });
         this.connect_after_named(this._inner, 'child-removed', (_self, child) => {
             if (this._inner.get_children().length === 0)
-                this.add_constraint(this._width_constraint);
+                this._width_constraint.enabled = true;
             if (child._keep_layout || !child.is_grid_item)
                 return;
             array_remove(this._panel_layout, child.panel_name);
         });
-        this.connect('destroy', () => {
-            this._is_destroyed = true;
-            // Removed while the column has children, so not always released with it
-            if (this.get_constraints().includes(this._width_constraint))
-                this.remove_constraint(this._width_constraint);
-            this._width_constraint.source = null;
-            this._width_constraint = null;
-        });
+        this.connect('destroy', () => this._is_destroyed = true);
         this.connect_after_named(this, 'parent-set', (_self, old_parent) => {
             if (old_parent !== null)
                 this.disconnect_named(old_parent);
@@ -643,6 +642,9 @@ const PanelColumn = registerClass(class PanelColumn extends Semitransparent(St.B
             this.connect_after_named(parent, 'child-removed', update_source);
             update_source();
         });
+    }
+    get _width_constraint() {
+        return this.get_constraint(WIDTH_CONSTRAINT);
     }
     _set_valign(alignment) {
         if (alignment == "top") {
