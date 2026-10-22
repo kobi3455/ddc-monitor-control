@@ -429,12 +429,14 @@ class PanelGrid extends PopupMenu {
         this.box.style_class = ''; // and we remove it so it's invisible
         this.box.style = `spacing: ${GRID_SPACING}px`;
         this._set_alignment(alignment);
-        this.actor.connect_after('notify::allocation', () => {
+        this.actor.connectObject('notify::allocation', () => {
             if (!this._single_column) {
                 // The `setTimeout` fixes the following warning:
                 // Can't update stage views actor ... is on because it needs an allocation.
-                if ((this._alignment == "right" && this.actor.x > 0)
-                    || (this._alignment == "left" && this.actor.x + this.actor.width < this.actor.get_parent().allocation.x2))
+                // Only one is kept pending: the next allocation checks again.
+                if (!this._timeout_id
+                    && ((this._alignment == "right" && this.actor.x > 0)
+                    || (this._alignment == "left" && this.actor.x + this.actor.width < this.actor.get_parent().allocation.x2)))
                     this._timeout_id = setTimeout(() => {
                         this._timeout_id = null;
                         this._add_column();
@@ -447,11 +449,14 @@ class PanelGrid extends PopupMenu {
             else {
                 this._set_valign("top");
             }
-        });
-        this.actor.connect('destroy', () => {
-            if (this._timeout_id)
-                clearTimeout(this._timeout_id);
-        });
+        }, GObject.ConnectFlags.AFTER, this);
+    }
+    destroy() {
+        this.actor.disconnectObject(this);
+        if (this._timeout_id)
+            clearTimeout(this._timeout_id);
+        this._timeout_id = null;
+        super.destroy();
     }
     _set_alignment(alignment) {
         if (alignment != this._alignment) {
@@ -607,7 +612,14 @@ const PanelColumn = registerClass(class PanelColumn extends Semitransparent(St.B
                 return;
             array_remove(this._panel_layout, child.panel_name);
         });
-        this.connect('destroy', () => this._is_destroyed = true);
+        this.connect('destroy', () => {
+            this._is_destroyed = true;
+            // Removed while the column has children, so not always released with it
+            if (this.get_constraints().includes(this._width_constraint))
+                this.remove_constraint(this._width_constraint);
+            this._width_constraint.source = null;
+            this._width_constraint = null;
+        });
         this.connect_after_named(this, 'parent-set', (_self, old_parent) => {
             if (old_parent !== null)
                 this.disconnect_named(old_parent);
@@ -930,12 +942,12 @@ export class LibPanel {
     }
     _late_init() {
         // =================== Replacing the popup ==================
-        this._settings.connect('changed::alignment', () => {
+        this._settings.connectObject('changed::alignment', () => {
             this._panel_grid._set_alignment(this._settings.get_string('alignment'));
-        });
-        this._settings.connect('changed::single-column', () => {
+        }, this);
+        this._settings.connectObject('changed::single-column', () => {
             this._panel_grid._set_is_single_column(this._settings.get_boolean('single-column'));
-        });
+        }, this);
         this._panel_grid = new PanelGrid(QuickSettings, this._settings.get_string('alignment'), this._settings.get_boolean('single-column'));
         for (const column of this._settings.get_value("layout").recursiveUnpack().reverse()) {
             this._panel_grid._add_column(column);
@@ -964,39 +976,39 @@ export class LibPanel {
                 set_style(panel._grid, name, value);
             }
         };
-        this._settings.connect('changed::padding-enabled', () => {
+        this._settings.connectObject('changed::padding-enabled', () => {
             if (this._settings.get_boolean('padding-enabled'))
                 set_style_for_panels('padding', `${this._settings.get_int('padding')}px`);
             else
                 set_style_for_panels('padding', null);
-        });
-        this._settings.connect('changed::padding', () => {
+        }, this);
+        this._settings.connectObject('changed::padding', () => {
             if (!this._settings.get_boolean('padding-enabled'))
                 return;
             set_style_for_panels('padding', `${this._settings.get_int('padding')}px`);
-        });
-        this._settings.connect('changed::row-spacing-enabled', () => {
+        }, this);
+        this._settings.connectObject('changed::row-spacing-enabled', () => {
             if (this._settings.get_boolean('row-spacing-enabled'))
                 set_style_for_panels('spacing-rows', `${this._settings.get_int('row-spacing')}px`);
             else
                 set_style_for_panels('spacing-rows', null);
-        });
-        this._settings.connect('changed::row-spacing', () => {
+        }, this);
+        this._settings.connectObject('changed::row-spacing', () => {
             if (!this._settings.get_boolean('row-spacing-enabled'))
                 return;
             set_style_for_panels('spacing-rows', `${this._settings.get_int('row-spacing')}px`);
-        });
-        this._settings.connect('changed::column-spacing-enabled', () => {
+        }, this);
+        this._settings.connectObject('changed::column-spacing-enabled', () => {
             if (this._settings.get_boolean('column-spacing-enabled'))
                 set_style_for_panels('spacing-columns', `${this._settings.get_int('column-spacing')}px`);
             else
                 set_style_for_panels('spacing-columns', null);
-        });
-        this._settings.connect('changed::column-spacing', () => {
+        }, this);
+        this._settings.connectObject('changed::column-spacing', () => {
             if (!this._settings.get_boolean('column-spacing-enabled'))
                 return;
             set_style_for_panels('spacing-columns', `${this._settings.get_int('column-spacing')}px`);
-        });
+        }, this);
         // https://gjs-docs.gnome.org/gio20~2.0/gio.settings#signal-changed
         // "Note that @settings only emits this signal if you have read key at
         // least once while a signal handler was already connected for key."
@@ -1013,6 +1025,7 @@ export class LibPanel {
         this._old_menu = null;
         this._panel_grid.destroy();
         this._panel_grid = null;
+        this._settings.disconnectObject(this);
         this._settings = null;
         this._injection_manager.clear();
     }
